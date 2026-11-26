@@ -1,0 +1,508 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Jeu Pong Scratch</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap">
+<style>
+/* Layout: fiche de mission en colonne, chaque étape = étiquette + zone de code façon éditeur Scratch */
+:root{
+  --bg:#f3f0fb; --fg:#2b2440; --muted:#6b6385; --panel:#ffffff; --code:#f9f9fb; --dot:#dcd8e8;
+  --accent:#855cd6; --accent-soft:#ece5fb; --ok:#2e9e6a; --ok-soft:#e1f5ea; --bad:#d6455d; --bad-soft:#fbe5e9;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --body:"Nunito",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1b1726; --fg:#ece8f7; --muted:#a59dbf; --panel:#252036; --code:#2e2843; --dot:#3d3657;
+  --accent:#a985ff; --accent-soft:#3a2f5c; --ok:#5cd39b; --ok-soft:#1f3a2f; --bad:#ff7a90; --bad-soft:#47232c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1b1726; --fg:#ece8f7; --muted:#a59dbf; --panel:#252036; --code:#2e2843; --dot:#3d3657;
+  --accent:#a985ff; --accent-soft:#3a2f5c; --ok:#5cd39b; --ok-soft:#1f3a2f; --bad:#ff7a90; --bad-soft:#47232c; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+h1,h2{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,6vw,44px);font-weight:800}
+h1 span{color:var(--accent)}
+.intro{color:var(--muted);margin:6px 0 0;max-width:60ch}
+.setup{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--panel);border:1.5px solid var(--dot);border-radius:999px;padding:4px 12px;font-size:13.5px}
+.chip b{color:var(--accent)}
+section{background:var(--panel);border-radius:14px;padding:18px;display:grid;gap:12px;min-width:0}
+.head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tag{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);padding:2px 10px;border-radius:6px}
+h2{font-size:22px;font-weight:800}
+.sprite{font-size:13px;color:var(--muted)}
+.sprite b{color:var(--fg)}
+.note{margin:0;color:var(--muted);font-size:14px}
+.code{background:var(--code);background-image:radial-gradient(var(--dot) 1px,transparent 1.2px);background-size:18px 18px;border-radius:10px;padding:14px;overflow-x:auto;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-start}
+pre.blocks{margin:0;font-size:12px;white-space:pre}
+.bug{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.bug>div{border-radius:10px;padding:10px;display:grid;gap:8px;min-width:0}
+.bug .no{background:var(--bad-soft)} .bug .yes{background:var(--ok-soft)}
+.bug h3{margin:0;font-family:var(--display);font-size:16px}
+.no h3{color:var(--bad)} .yes h3{color:var(--ok)}
+.bug .code{background-color:var(--code)}
+ul.check{margin:0;padding-left:20px;display:grid;gap:4px}
+.test{border:2px dashed var(--ok);background:var(--ok-soft)}
+.prep{border:2px solid var(--accent)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+figure{margin:0;background:var(--code);border-radius:10px;padding:12px;display:grid;gap:8px;align-content:start;min-width:0}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-size:14px}
+figcaption b.n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;margin-right:6px}
+.tip{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:14px;margin:0}
+.s-panel{fill:var(--panel);stroke:var(--dot);stroke-width:1.5}
+.s-field{fill:var(--panel);stroke:var(--dot);stroke-width:1.5}
+.s-hl{fill:none;stroke:var(--accent);stroke-width:3}
+.s-hlfill{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.s-tx{fill:var(--fg);font:700 12px var(--body)}
+.s-mu{fill:var(--muted);font:11px var(--body)}
+.s-ac{fill:var(--accent);font:800 12px var(--body)}
+.s-ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+.s-axis{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4}
+.s-ico{fill:var(--muted)}
+.stage .s-tx{font-size:15px}.stage .s-mu{font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.legend span{font-size:12.5px;font-weight:700;color:#fff;padding:2px 10px;border-radius:999px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tabs button{font:inherit;cursor:pointer;background:var(--panel);color:var(--fg);border:2px solid var(--dot);border-radius:14px;padding:10px 8px;display:grid;gap:2px;justify-items:center;text-align:center}
+.tabs button .e{font-size:28px;line-height:1}
+.tabs button .t{font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15}
+.tabs button .k{font-size:12px;color:var(--muted)}
+.tabs button[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mission{display:grid;gap:22px}
+.mission[hidden]{display:none}
+.mhead{display:grid;gap:8px}
+.mhead h1{font-size:clamp(26px,5vw,38px)}
+.goal{font-size:16px;margin:0;max-width:62ch}
+.how{margin:0;font-size:14px;background:var(--code);border-radius:8px;padding:8px 10px}
+.how b{color:var(--accent)}
+.done{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.done label{display:flex;gap:8px;align-items:center;background:var(--code);border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:700}
+.done input{width:20px;height:20px;accent-color:var(--ok)}
+.ideas{margin:0;padding-left:20px;display:grid;gap:4px}
+@media (max-width:520px){.tabs button .t{font-size:13px}.tabs button .k{display:none}}
+</style>
+<style>
+.game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:center}
+.game svg{width:100%;height:auto;display:block;border-radius:12px}
+@media (max-width:640px){.game{grid-template-columns:1fr}}
+.steps-nav{display:flex;flex-wrap:wrap;gap:8px}
+.steps-nav a{background:var(--panel);border:2px solid var(--dot);border-radius:999px;padding:5px 12px;font-weight:700;font-size:13.5px;color:var(--fg);text-decoration:none}
+.steps-nav a:hover,.steps-nav a:focus-visible{border-color:var(--accent);outline:none}
+.stepnum{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--display);font-weight:800;font-size:18px;flex:none}
+.todo{margin:0;padding-left:22px;display:grid;gap:6px;font-size:15px}
+.todo li::marker{font-weight:800;color:var(--accent)}
+.testbox{margin:0;background:var(--ok-soft);border-radius:8px;padding:8px 10px;font-size:14px}
+.testbox b{color:var(--ok)}
+.for{margin:0 0 -6px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;padding:8px 12px;border-radius:10px 10px 0 0;color:#1d1830}
+.for .dot{width:16px;height:16px;border-radius:50%;flex:none;border:2px solid rgba(0,0,0,.25)}
+.for.sp-ball{background:#ffe08a}.for.sp-ball .dot{background:#ffc928}
+.for.sp-paddle{background:#b4eeae}.for.sp-paddle .dot{background:#4fc846}
+.for.sp-line{background:#ffb9b3}.for.sp-line .dot{background:#e0483e}
+.code.sp-ball,.code.sp-paddle,.code.sp-line{border:3px solid;border-top:0;border-radius:0 0 10px 10px}
+.code.sp-ball{border-color:#ffe08a}.code.sp-paddle{border-color:#b4eeae}.code.sp-line{border-color:#ffb9b3}
+.where{font-size:13px;font-weight:700;color:#fff;padding:1px 9px;border-radius:999px;white-space:nowrap}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>🏓 Jeu Pong : <span>crée ton premier jeu</span></h1>
+    <p class="intro">Suis les étapes dans l'ordre. À chaque étape : recopie les blocs, puis clique sur le drapeau vert pour tester. La couleur d'un bloc te dit dans quelle catégorie le trouver.</p>
+    <div class="legend">
+      <span style="background:#4c97ff">Mouvement</span>
+      <span style="background:#9966ff">Apparence</span>
+      <span style="background:#cf63cf">Son</span>
+      <span style="background:#d9a400">Événements</span>
+      <span style="background:#ffab19">Contrôle</span>
+      <span style="background:#4cb0d8">Capteurs</span>
+      <span style="background:#40bf4a">Opérateurs</span>
+      <span style="background:#ff8c1a">Variables</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="game">
+      <svg viewBox="0 0 480 360" role="img" aria-label="Aperçu du jeu : une balle, une raquette verte et une ligne rouge en bas">
+        <rect width="480" height="360" fill="#4c7fe0"/>
+        <g fill="none" stroke="#86aef5" stroke-width="2">
+          <rect x="50" y="40" width="380" height="250"/><rect x="100" y="80" width="280" height="170"/><rect x="145" y="112" width="190" height="106"/>
+          <path d="M0 0 L145 112 M480 0 L335 112 M0 360 L145 218 M480 360 L335 218"/>
+        </g>
+        <path d="M150 262 Q250 120 350 110" fill="none" stroke="#ff6b81" stroke-width="5" stroke-dasharray="12 9" stroke-linecap="round"/>
+        <circle cx="370" cy="100" r="34" fill="#ffd25a" stroke="#e6a800" stroke-width="3"/>
+        <rect x="85" y="262" width="130" height="22" rx="3" fill="#6bdb63" stroke="#2e7d32" stroke-width="3"/>
+        <rect x="0" y="332" width="480" height="10" fill="#e0483e"/>
+        <rect x="14" y="14" width="110" height="30" rx="8" fill="#ff8c1a"/><text x="69" y="35" fill="#fff" font-weight="800" font-size="16" text-anchor="middle">Score 0</text>
+        <text x="370" y="158" fill="#fff" font-weight="800" font-size="15" text-anchor="middle">Ball (la balle)</text>
+        <text x="150" y="308" fill="#fff" font-weight="800" font-size="15" text-anchor="middle">Paddle (la raquette)</text>
+        <text x="470" y="324" fill="#fff" font-weight="800" font-size="15" text-anchor="end">Line (la ligne rouge)</text>
+      </svg>
+      <div style="display:grid;gap:10px">
+        <h2>Le but du jeu</h2>
+        <p class="goal">La balle rebondit partout. Avec la souris, déplace la raquette pour la renvoyer. Chaque rebond sur la raquette donne <b>1 point</b>. Si la balle touche la ligne rouge, c'est <b>perdu</b>. À <b>15 points</b>, tu as gagné !</p>
+        <div class="setup">
+          <span class="chip">3 sprites : <b>Ball</b>, <b>Paddle</b>, <b>Line</b></span>
+          <span class="chip">1 décor : <b>Neon Tunnel</b></span>
+          <span class="chip">1 variable : <b>Score</b></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="steps-nav" aria-label="Étapes">
+    <a href="#preparer">Préparer</a>
+    <a href="#etape-1">1 · La balle</a>
+    <a href="#etape-2">2 · La raquette</a>
+    <a href="#etape-3">3 · Le rebond</a>
+    <a href="#etape-4">4 · Perdu</a>
+    <a href="#etape-5">5 · Le score</a>
+    <a href="#etape-6">6 · Gagné</a>
+    <a href="#defis">Bonus</a>
+    <a href="#recap">Tout le code</a>
+  </nav>
+
+  <!-- ===== PRÉPARER ===== -->
+  <section class="prep" id="preparer">
+    <div class="head"><span class="tag">Avant de coder</span><h2>Préparer le projet</h2></div>
+    <div class="figs">
+      <figure>
+        <svg viewBox="0 0 320 150" role="img" aria-label="Barre du haut de Scratch avec le globe des langues et le bouton Tutoriels">
+          <rect class="s-panel" x="6" y="6" width="308" height="138" rx="10"/>
+          <rect x="14" y="16" width="292" height="34" rx="6" fill="#855cd6"/>
+          <text x="30" y="39" font-size="16">🌐</text>
+          <text x="60" y="38" fill="#fff" font-weight="700" font-size="12">Fichier</text>
+          <text x="112" y="38" fill="#fff" font-weight="700" font-size="12">Modifier</text>
+          <rect x="170" y="21" width="92" height="24" rx="12" fill="#fff"/>
+          <text x="216" y="38" fill="#855cd6" font-weight="800" font-size="12" text-anchor="middle">💡 Tutoriels</text>
+          <circle class="s-hl" cx="38" cy="33" r="15"/>
+          <text class="s-ac" x="20" y="76">↑ le globe : choisis Français</text>
+          <text class="s-mu" x="20" y="100">Dans Tutoriels, tu trouves la vidéo « Jeu Pong ».</text>
+          <text class="s-mu" x="20" y="118">Ici, on suit cette fiche pas à pas.</text>
+        </svg>
+        <figcaption><b class="n">1</b>Va sur <b>scratch.mit.edu</b> et clique sur <b>Créer</b>. Si Scratch est en anglais, clique sur le <b>globe</b> 🌐 en haut à gauche et choisis <b>Français</b>.</figcaption>
+      </figure>
+
+      <figure>
+        <svg viewBox="0 0 320 150" role="img" aria-label="Supprimer le sprite du chat avec la croix">
+          <rect class="s-panel" x="6" y="6" width="308" height="138" rx="10"/>
+          <text class="s-mu" x="18" y="26">Zone des sprites (en bas à droite)</text>
+          <rect class="s-hl" x="24" y="40" width="80" height="84" rx="8"/>
+          <text x="64" y="92" font-size="34" text-anchor="middle">🐱</text>
+          <text class="s-tx" x="64" y="116" text-anchor="middle">Sprite1</text>
+          <circle cx="104" cy="40" r="12" fill="#855cd6"/><text x="104" y="45" fill="#fff" font-weight="800" font-size="14" text-anchor="middle">✕</text>
+          <text class="s-ac" x="126" y="44">← clique sur la croix</text>
+          <text class="s-mu" x="126" y="70">Le chat disparaît :</text>
+          <text class="s-mu" x="126" y="88">on n'en a pas besoin</text>
+          <text class="s-mu" x="126" y="106">dans ce jeu.</text>
+        </svg>
+        <figcaption><b class="n">2</b><b>Supprime le chat</b> : clique sur lui dans la zone des sprites, puis sur la petite <b>croix</b>.</figcaption>
+      </figure>
+
+      <figure>
+        <svg viewBox="0 0 320 200" role="img" aria-label="Choisir l'arrière-plan Neon Tunnel">
+          <rect class="s-panel" x="6" y="6" width="308" height="188" rx="10"/>
+          <rect class="s-field" x="18" y="18" width="200" height="26" rx="13"/>
+          <text x="32" y="36" font-size="12">🔍</text><text class="s-tx" x="50" y="36">neon</text>
+          <rect class="s-hlfill" x="18" y="56" width="130" height="100" rx="8"/>
+          <rect x="28" y="64" width="110" height="66" rx="4" fill="#4c7fe0"/>
+          <g fill="none" stroke="#86aef5" stroke-width="1.5"><rect x="42" y="72" width="82" height="50"/><rect x="58" y="82" width="50" height="30"/></g>
+          <text class="s-ac" x="83" y="148" text-anchor="middle">Neon Tunnel</text>
+          <circle cx="270" cy="160" r="20" fill="#855cd6"/><text x="270" y="166" font-size="16" text-anchor="middle">🖼️</text>
+          <circle class="s-hl" cx="270" cy="160" r="25"/>
+          <text class="s-ac" x="296" y="118" text-anchor="end">Choisir un</text>
+          <text class="s-ac" x="296" y="132" text-anchor="end">arrière-plan ↓</text>
+        </svg>
+        <figcaption><b class="n">3</b>Tout en bas à droite, clique sur <b>Choisir un arrière-plan</b>. Tape <b>neon</b> et choisis <b>Neon Tunnel</b>.</figcaption>
+      </figure>
+
+      <figure>
+        <svg viewBox="0 0 320 200" role="img" aria-label="Choisir les sprites Ball, Paddle et Line">
+          <rect class="s-panel" x="6" y="6" width="308" height="188" rx="10"/>
+          <rect class="s-field" x="18" y="18" width="284" height="26" rx="13"/>
+          <text x="32" y="36" font-size="12">🔍</text><text class="s-tx" x="50" y="36">ball</text>
+          <rect class="s-hlfill" x="18" y="56" width="84" height="84" rx="8"/><circle cx="60" cy="92" r="18" fill="#ffd25a" stroke="#e6a800" stroke-width="2"/><text class="s-ac" x="60" y="130" text-anchor="middle">Ball</text>
+          <rect class="s-hlfill" x="118" y="56" width="84" height="84" rx="8"/><rect x="132" y="86" width="56" height="12" rx="2" fill="#6bdb63" stroke="#2e7d32" stroke-width="2"/><text class="s-ac" x="160" y="130" text-anchor="middle">Paddle</text>
+          <rect class="s-hlfill" x="218" y="56" width="84" height="84" rx="8"/><rect x="228" y="90" width="64" height="5" fill="#e0483e"/><text class="s-ac" x="260" y="130" text-anchor="middle">Line</text>
+          <text class="s-mu" x="60" y="162" text-anchor="middle">la balle</text>
+          <text class="s-mu" x="160" y="162" text-anchor="middle">la raquette</text>
+          <text class="s-mu" x="260" y="162" text-anchor="middle">la ligne rouge</text>
+          <text class="s-mu" x="160" y="184" text-anchor="middle">les noms sont en anglais dans la bibliothèque</text>
+        </svg>
+        <figcaption><b class="n">4</b>Clique sur <b>Choisir un sprite</b> (le bouton avec la tête de chat) 3 fois. Cherche et ajoute : <b>Ball</b>, puis <b>Paddle</b>, puis <b>Line</b>.</figcaption>
+      </figure>
+
+      <figure>
+        <svg class="stage" viewBox="0 0 480 380" role="img" aria-label="Où placer les trois sprites sur la scène">
+          <rect x="0" y="0" width="480" height="360" rx="8" fill="#4c7fe0"/>
+          <g fill="none" stroke="#86aef5" stroke-width="2"><rect x="50" y="40" width="380" height="250"/><rect x="110" y="85" width="260" height="160"/></g>
+          <circle cx="240" cy="80" r="24" fill="#ffd25a" stroke="#e6a800" stroke-width="3"/>
+          <text x="275" y="86" fill="#fff" font-weight="800" font-size="16">Ball : en haut</text>
+          <rect x="185" y="290" width="110" height="18" rx="3" fill="#6bdb63" stroke="#2e7d32" stroke-width="3"/>
+          <text x="240" y="280" fill="#fff" font-weight="800" font-size="16" text-anchor="middle">Paddle : en bas</text>
+          <rect x="0" y="340" width="480" height="9" fill="#e0483e"/>
+          <text x="470" y="332" fill="#fff" font-weight="800" font-size="16" text-anchor="end">Line : tout en bas</text>
+          <text class="s-mu" x="240" y="376" text-anchor="middle">la raquette doit être au-dessus de la ligne rouge</text>
+        </svg>
+        <figcaption><b class="n">5</b>Sur la scène, <b>glisse chaque sprite</b> avec la souris : la balle en haut, la raquette en bas, la ligne rouge tout en bas, sous la raquette.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 320 200" role="img" aria-label="Cliquer sur le sprite avant de poser ses blocs">
+          <rect class="s-panel" x="6" y="6" width="308" height="188" rx="10"/>
+          <text class="s-mu" x="18" y="26">Zone des sprites (en bas à droite)</text>
+          <rect x="18" y="40" width="84" height="88" rx="8" fill="#fff8dc" stroke="#4c97ff" stroke-width="4"/>
+          <circle cx="60" cy="76" r="18" fill="#ffd25a" stroke="#e6a800" stroke-width="2"/><text x="60" y="118" font-weight="800" font-size="12" text-anchor="middle" fill="#2b2440">Ball</text>
+          <rect class="s-field" x="118" y="40" width="84" height="88" rx="8"/><rect x="132" y="70" width="56" height="12" rx="2" fill="#6bdb63" stroke="#2e7d32" stroke-width="2"/><text class="s-tx" x="160" y="118" text-anchor="middle">Paddle</text>
+          <rect class="s-field" x="218" y="40" width="84" height="88" rx="8"/><rect x="228" y="74" width="64" height="5" fill="#e0483e"/><text class="s-tx" x="260" y="118" text-anchor="middle">Line</text>
+          <text class="s-ac" x="60" y="148" text-anchor="middle">↑ contour bleu</text>
+          <text class="s-tx" x="160" y="174" text-anchor="middle">Contour bleu = sprite choisi.</text>
+          <text class="s-mu" x="160" y="188" text-anchor="middle">Les blocs que tu poses sont pour lui.</text>
+        </svg>
+        <figcaption><b class="n">6</b><b>La règle d'or :</b> avant de poser des blocs, <b>clique sur le bon sprite</b> dans la zone des sprites. Il a alors un contour bleu. Chaque code de cette fiche a une étiquette qui dit pour quel sprite il est.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===== ÉTAPE 1 ===== -->
+  <section id="etape-1">
+    <div class="head"><span class="stepnum">1</span><h2>La balle rebondit partout</h2><span class="sprite">clique d'abord sur le sprite <b>Ball</b></span></div>
+    <ol class="todo">
+      <li>Prends le chapeau jaune dans <span class="where" style="background:#d9a400">Événements</span>.</li>
+      <li>Accroche les blocs bleus de <span class="where" style="background:#4c97ff">Mouvement</span> en dessous.</li>
+      <li>Dans <span class="where" style="background:#ffab19">Contrôle</span>, prends <b>répéter indéfiniment</b> et mets les 2 blocs bleus <b>à l'intérieur</b>.</li>
+    </ol>
+    <p class="for sp-ball"><span class="dot"></span>Ce code va dans le sprite <b>Ball</b> (la balle)</p>
+    <div class="code sp-ball"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (0) y: (100)
+s'orienter à (45)
+répéter indéfiniment
+avancer de (15) pas
+rebondir si le bord est atteint
+fin</pre></div>
+    <p class="how">💡 <b>s'orienter à 45</b> fait partir la balle en diagonale. <b>répéter indéfiniment</b> est une boucle : la balle avance, encore et encore, sans s'arrêter. Quand elle touche un bord, elle rebondit.</p>
+    <p class="testbox"><b>Teste :</b> clique sur le drapeau vert 🏁. La balle doit rebondir sur les 4 bords. Clique sur le rond rouge pour arrêter.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 2 ===== -->
+  <section id="etape-2">
+    <div class="head"><span class="stepnum">2</span><h2>La raquette suit la souris</h2><span class="sprite">clique sur le sprite <b>Paddle</b></span></div>
+    <ol class="todo">
+      <li>Prends le chapeau jaune, puis le bloc bleu <b>aller à x: 0 y: -120</b> (écris bien les nombres).</li>
+      <li>Ajoute la boucle <b>répéter indéfiniment</b>.</li>
+      <li>Dans <span class="where" style="background:#4c97ff">Mouvement</span>, prends <b>mettre x à</b> et mets-le dans la boucle.</li>
+      <li>Dans <span class="where" style="background:#4cb0d8">Capteurs</span>, prends le petit bloc rond <b>souris x</b> et glisse-le <b>dans le rond blanc</b> du bloc bleu.</li>
+    </ol>
+    <p class="for sp-paddle"><span class="dot"></span>Ce code va dans le sprite <b>Paddle</b> (la raquette)</p>
+    <div class="code sp-paddle"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (0) y: (-120)
+répéter indéfiniment
+mettre x à (souris x)
+fin</pre></div>
+    <p class="how">💡 <b>aller à x: 0 y: -120</b> place la raquette en bas, au bon endroit, à chaque partie. <b>x</b>, c'est la position gauche ↔ droite. <b>souris x</b> donne la position de ta souris. La raquette se met donc toujours au même endroit que la souris.</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁, puis bouge la souris de gauche à droite sur la scène. La raquette te suit !</p>
+  </section>
+
+  <!-- ===== ÉTAPE 3 ===== -->
+  <section id="etape-3">
+    <div class="head"><span class="stepnum">3</span><h2>La balle rebondit sur la raquette</h2><span class="sprite">reviens sur le sprite <b>Ball</b></span></div>
+    <p class="note">On ajoute un <b>deuxième script</b> à la balle, à côté du premier. Ne supprime pas le premier !</p>
+    <ol class="todo">
+      <li>Dans <span class="where" style="background:#ffab19">Contrôle</span>, prends <b>si … alors</b> et mets-le dans une boucle <b>répéter indéfiniment</b>.</li>
+      <li>Dans <span class="where" style="background:#4cb0d8">Capteurs</span>, prends <b>touche le … ?</b>, glisse-le dans le trou pointu du <b>si</b>, puis choisis <b>Paddle</b> dans le menu.</li>
+      <li>Dans <span class="where" style="background:#40bf4a">Opérateurs</span>, prends <b>nombre aléatoire entre … et …</b> et glisse-le dans le rond du bloc <b>tourner</b>. Écris 170 et 190.</li>
+    </ol>
+    <p class="for sp-ball"><span class="dot"></span>Ce code va dans le sprite <b>Ball</b> (la balle)</p>
+    <div class="code sp-ball"><pre class="blocks">quand @greenFlag est cliqué
+répéter indéfiniment
+si &lt;touche le [Paddle v] ?&gt; alors
+tourner @turnRight de (nombre aléatoire entre (170) et (190)) degrés
+avancer de (15) pas
+attendre (0.5) secondes
+fin
+fin</pre></div>
+    <p class="how">💡 <b>si … alors</b> est une condition : SI la balle touche la raquette, ALORS elle fait demi-tour. Le <b>nombre aléatoire</b> est choisi au hasard par l'ordinateur : la balle ne repart jamais exactement pareil. <b>attendre 0.5 secondes</b> laisse à la balle le temps de s'éloigner.</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁. Place la raquette sous la balle : elle doit repartir vers le haut.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 4 ===== -->
+  <section id="etape-4">
+    <div class="head"><span class="stepnum">4</span><h2>Perdu ! La ligne rouge arrête le jeu</h2></div>
+    <p class="note"><b>A.</b> Clique sur le sprite <b>Line</b> et pose ce petit script. Il remet la ligne tout en bas à chaque partie.</p>
+    <p class="for sp-line"><span class="dot"></span>Ce code va dans le sprite <b>Line</b> (la ligne rouge)</p>
+    <div class="code sp-line"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (0) y: (-170)</pre></div>
+    <p class="note"><b>B.</b> Clique sur le sprite <b>Ball</b> et ajoute ce <b>troisième script</b>, à côté des deux autres.</p>
+    <p class="for sp-ball"><span class="dot"></span>Ce code va dans le sprite <b>Ball</b> (la balle)</p>
+    <div class="code sp-ball"><pre class="blocks">quand @greenFlag est cliqué
+attendre jusqu'à ce que &lt;touche le [Line v] ?&gt;
+stop [tout v]</pre></div>
+    <p class="how">💡 <b>attendre jusqu'à ce que</b> (dans Contrôle) ne fait rien… jusqu'au moment où la balle touche la ligne. Alors <b>stop tout</b> arrête le jeu : c'est le « game over ».</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁, et laisse tomber la balle exprès. Tout doit s'arrêter quand elle touche la ligne rouge.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 5 ===== -->
+  <section id="etape-5">
+    <div class="head"><span class="stepnum">5</span><h2>On compte les points</h2><span class="sprite">dans le sprite <b>Ball</b></span></div>
+    <div class="figs">
+      <figure>
+        <svg viewBox="0 0 320 210" role="img" aria-label="Créer une variable nommée Score">
+          <rect class="s-panel" x="6" y="6" width="308" height="198" rx="10"/>
+          <circle cx="30" cy="34" r="12" fill="#ff8c1a"/><text class="s-tx" x="48" y="38">Variables</text>
+          <rect class="s-hlfill" x="20" y="54" width="140" height="28" rx="6"/><text class="s-ac" x="90" y="73" text-anchor="middle">Créer une variable</text>
+          <rect class="s-field" x="20" y="96" width="282" height="100" rx="8"/>
+          <text class="s-mu" x="32" y="116">Nom de la nouvelle variable :</text>
+          <rect class="s-field" x="32" y="124" width="180" height="24" rx="4"/><rect class="s-hl" x="30" y="122" width="184" height="28" rx="5"/>
+          <text class="s-tx" x="42" y="141">Score</text>
+          <circle cx="40" cy="170" r="6" fill="#855cd6"/><text class="s-tx" x="52" y="174">Pour tous les sprites</text>
+          <rect x="226" y="160" width="62" height="24" rx="12" fill="#855cd6"/><text x="257" y="176" fill="#fff" font-weight="700" font-size="12" text-anchor="middle">OK</text>
+        </svg>
+        <figcaption><b class="n">1</b>Catégorie orange <span class="where" style="background:#ff8c1a">Variables</span> ➜ <b>Créer une variable</b> ➜ écris <b>Score</b> ➜ <b>OK</b>. Le score s'affiche en haut de la scène.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 320 210" role="img" aria-label="Une variable est une boîte qui garde un nombre">
+          <rect class="s-panel" x="6" y="6" width="308" height="198" rx="10"/>
+          <path d="M100 80 h120 v90 h-120z" fill="#ffb366" stroke="#ff8c1a" stroke-width="3"/>
+          <path d="M100 80 l-22 -26 h120 l22 26z" fill="#ffd0a0" stroke="#ff8c1a" stroke-width="3"/>
+          <rect x="120" y="100" width="80" height="24" rx="4" fill="#fff"/><text x="160" y="117" font-weight="800" font-size="13" text-anchor="middle" fill="#2b2440">Score</text>
+          <text x="160" y="158" font-weight="800" font-size="30" text-anchor="middle" fill="#fff">3</text>
+          <text class="s-tx" x="160" y="192" text-anchor="middle">une boîte qui garde un nombre</text>
+          <text class="s-ac" x="246" y="110">+1 à</text><text class="s-ac" x="246" y="126">chaque</text><text class="s-ac" x="246" y="142">rebond</text>
+        </svg>
+        <figcaption><b class="n">2</b>Une <b>variable</b>, c'est une boîte avec une étiquette. Dedans, il y a un nombre que le programme peut changer.</figcaption>
+      </figure>
+    </div>
+    <p class="note">Ajoute maintenant <b>2 blocs orange</b> dans les deux scripts de la balle que tu as déjà. À gauche : <b>mettre Score à 0</b>, juste sous le chapeau. À droite : <b>ajouter 1 à Score</b>, en premier dans le <b>si</b>.</p>
+    <p class="for sp-ball"><span class="dot"></span>Ce code va dans le sprite <b>Ball</b> (la balle)</p>
+    <div class="code sp-ball">
+<pre class="blocks">quand @greenFlag est cliqué
+mettre [Score v] à (0)
+aller à x: (0) y: (100)
+s'orienter à (45)
+répéter indéfiniment
+avancer de (15) pas
+rebondir si le bord est atteint
+fin</pre>
+<pre class="blocks">quand @greenFlag est cliqué
+répéter indéfiniment
+si &lt;touche le [Paddle v] ?&gt; alors
+ajouter (1) à [Score v]
+tourner @turnRight de (nombre aléatoire entre (170) et (190)) degrés
+avancer de (15) pas
+attendre (0.5) secondes
+fin
+fin</pre>
+    </div>
+    <p class="how">💡 <b>mettre Score à 0</b> : au début de chaque partie, on repart de zéro. <b>ajouter 1 à Score</b> : à chaque fois que la balle touche la raquette, tu gagnes 1 point.</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁. Le score commence à 0 et monte de 1 à chaque rebond sur la raquette.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 6 ===== -->
+  <section id="etape-6">
+    <div class="head"><span class="stepnum">6</span><h2>Gagné ! À 15 points</h2><span class="sprite">dans le sprite <b>Ball</b></span></div>
+    <ol class="todo">
+      <li>Dans <span class="where" style="background:#40bf4a">Opérateurs</span>, prends le bloc vert pointu <b>… = …</b> et glisse-le dans <b>attendre jusqu'à ce que</b>.</li>
+      <li>Dans <span class="where" style="background:#ff8c1a">Variables</span>, prends le bloc rond <b>Score</b> et mets-le à gauche du signe =. Écris 15 à droite.</li>
+    </ol>
+    <p class="for sp-ball"><span class="dot"></span>Ce code va dans le sprite <b>Ball</b> (la balle)</p>
+    <div class="code sp-ball"><pre class="blocks">quand @greenFlag est cliqué
+attendre jusqu'à ce que &lt;(Score) = (15)&gt;
+stop [autres scripts du sprite v] :: control stack
+dire [Gagné !] pendant (2) secondes
+stop [tout v]</pre></div>
+    <p class="note">Les 5 blocs forment <b>un seul script</b>, accrochés les uns sous les autres. Pour le premier stop : prends <b>stop tout</b> dans Contrôle, clique sur sa petite flèche et choisis <b>autres scripts du sprite</b>. Tu peux alors accrocher des blocs en dessous.</p>
+    <p class="how">💡 Ce script attend jusqu'à ce que le score soit égal à 15. Alors <b>stop autres scripts du sprite</b> immobilise la balle, elle dit « Gagné ! », et le jeu s'arrête.</p>
+    <p class="testbox"><b>Teste :</b> joue une vraie partie. Arrives-tu à 15 points ?</p>
+  </section>
+
+  <!-- ===== TEST FINAL ===== -->
+  <section class="test">
+    <div class="head"><span class="tag">Teste tout !</span><h2>Ton jeu est-il complet ?</h2></div>
+    <div class="done">
+      <label><input type="checkbox" id="t-1"> La balle rebondit sur les bords</label>
+      <label><input type="checkbox" id="t-2"> La raquette suit la souris</label>
+      <label><input type="checkbox" id="t-3"> La balle rebondit sur la raquette</label>
+      <label><input type="checkbox" id="t-4"> La ligne rouge arrête le jeu</label>
+      <label><input type="checkbox" id="t-5"> Le score monte de 1 en 1</label>
+      <label><input type="checkbox" id="t-6"> À 15 points, c'est gagné</label>
+    </div>
+  </section>
+
+  <!-- ===== DÉFIS ===== -->
+  <section id="defis">
+    <div class="head"><span class="tag">S'il reste du temps</span><h2>Améliore ton jeu</h2></div>
+    <div class="head"><h2 style="font-size:18px">⭐ Plus dur : la balle va plus vite</h2></div>
+    <p class="note">Dans le premier script de la balle, remplace <b>15</b> par <b>20</b> dans « avancer de 15 pas ». Essaie aussi 10 pour un jeu plus facile.</p>
+
+    <div class="head"><h2 style="font-size:18px">⭐⭐ La balle change de couleur et fait un son</h2><span class="sprite">dans le <b>si … alors</b> de la balle</span></div>
+    <p class="for sp-ball"><span class="dot"></span>Ce code va dans le sprite <b>Ball</b> (la balle)</p>
+    <div class="code sp-ball"><pre class="blocks">si &lt;touche le [Paddle v] ?&gt; alors
+ajouter (1) à [Score v]
+ajouter (25) à l'effet [couleur v]
+jouer le son [Pop v]
+tourner @turnRight de (nombre aléatoire entre (170) et (190)) degrés
+avancer de (15) pas
+attendre (0.5) secondes
+fin</pre></div>
+    <p class="note">Ajoute les blocs violet et rose. Pour le son : choisis celui que tu veux dans le petit menu du bloc rose, ou ajoutes-en un dans l'onglet <b>Sons</b>.</p>
+
+    <div class="head"><h2 style="font-size:18px">⭐⭐⭐ La balle annonce ton score quand tu perds</h2><span class="sprite">remplace le script « Perdu » de la balle</span></div>
+    <p class="for sp-ball"><span class="dot"></span>Ce code va dans le sprite <b>Ball</b> (la balle)</p>
+    <div class="code sp-ball"><pre class="blocks">quand @greenFlag est cliqué
+attendre jusqu'à ce que &lt;touche le [Line v] ?&gt;
+stop [autres scripts du sprite v] :: control stack
+dire (regrouper [Perdu ! Ton score : ] et (Score)) pendant (2) secondes
+stop [tout v]</pre></div>
+    <p class="note">Le bloc vert <b>regrouper</b> (dans Opérateurs) colle un texte et un nombre ensemble. <b>stop autres scripts du sprite</b> immobilise la balle pendant qu'elle parle.</p>
+  </section>
+
+  <!-- ===== RÉCAP ===== -->
+  <section id="recap">
+    <div class="head"><span class="tag">Tout le code</span><h2>Le jeu complet, sprite par sprite</h2></div>
+    <div class="head"><h2 style="font-size:18px">🟡 Ball : 4 scripts</h2></div>
+    <p class="for sp-ball"><span class="dot"></span>Ce code va dans le sprite <b>Ball</b> (la balle)</p>
+    <div class="code sp-ball">
+<pre class="blocks">quand @greenFlag est cliqué
+mettre [Score v] à (0)
+aller à x: (0) y: (100)
+s'orienter à (45)
+répéter indéfiniment
+avancer de (15) pas
+rebondir si le bord est atteint
+fin</pre>
+<pre class="blocks">quand @greenFlag est cliqué
+répéter indéfiniment
+si &lt;touche le [Paddle v] ?&gt; alors
+ajouter (1) à [Score v]
+tourner @turnRight de (nombre aléatoire entre (170) et (190)) degrés
+avancer de (15) pas
+attendre (0.5) secondes
+fin
+fin</pre>
+<pre class="blocks">quand @greenFlag est cliqué
+attendre jusqu'à ce que &lt;touche le [Line v] ?&gt;
+stop [tout v]</pre>
+<pre class="blocks">quand @greenFlag est cliqué
+attendre jusqu'à ce que &lt;(Score) = (15)&gt;
+stop [autres scripts du sprite v] :: control stack
+dire [Gagné !] pendant (2) secondes
+stop [tout v]</pre>
+    </div>
+    <div class="head"><h2 style="font-size:18px">🟢 Paddle : 1 script</h2></div>
+    <p class="for sp-paddle"><span class="dot"></span>Ce code va dans le sprite <b>Paddle</b> (la raquette)</p>
+    <div class="code sp-paddle"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (0) y: (-120)
+répéter indéfiniment
+mettre x à (souris x)
+fin</pre></div>
+    <div class="head"><h2 style="font-size:18px">🔴 Line : 1 script</h2></div>
+    <p class="for sp-line"><span class="dot"></span>Ce code va dans le sprite <b>Line</b> (la ligne rouge)</p>
+    <div class="code sp-line"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (0) y: (-170)</pre></div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.6.4/build/scratchblocks.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.6.4/build/translations-all.js"></script>
+<script>
+try{ scratchblocks.renderMatching('pre.blocks',{style:'scratch3',languages:['fr'],scale:0.8}); }catch(e){ console.error(e); }
+</script>
+
+</body></html>

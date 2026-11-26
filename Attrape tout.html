@@ -1,0 +1,493 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Attrape tout</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;700&display=swap">
+<style>
+/* Layout: fiche de mission en colonne, chaque étape = étiquette + zone de code façon éditeur Scratch */
+:root{
+  --bg:#f3f0fb; --fg:#2b2440; --muted:#6b6385; --panel:#ffffff; --code:#f9f9fb; --dot:#dcd8e8;
+  --accent:#855cd6; --accent-soft:#ece5fb; --ok:#2e9e6a; --ok-soft:#e1f5ea; --bad:#d6455d; --bad-soft:#fbe5e9;
+  --display:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --body:"Nunito",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1b1726; --fg:#ece8f7; --muted:#a59dbf; --panel:#252036; --code:#2e2843; --dot:#3d3657;
+  --accent:#a985ff; --accent-soft:#3a2f5c; --ok:#5cd39b; --ok-soft:#1f3a2f; --bad:#ff7a90; --bad-soft:#47232c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1b1726; --fg:#ece8f7; --muted:#a59dbf; --panel:#252036; --code:#2e2843; --dot:#3d3657;
+  --accent:#a985ff; --accent-soft:#3a2f5c; --ok:#5cd39b; --ok-soft:#1f3a2f; --bad:#ff7a90; --bad-soft:#47232c; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:22px}
+h1,h2{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(30px,6vw,44px);font-weight:800}
+h1 span{color:var(--accent)}
+.intro{color:var(--muted);margin:6px 0 0;max-width:60ch}
+.setup{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--panel);border:1.5px solid var(--dot);border-radius:999px;padding:4px 12px;font-size:13.5px}
+.chip b{color:var(--accent)}
+section{background:var(--panel);border-radius:14px;padding:18px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;min-width:0}
+.head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.tag{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);padding:2px 10px;border-radius:6px}
+h2{font-size:22px;font-weight:800}
+.sprite{font-size:13px;color:var(--muted)}
+.sprite b{color:var(--fg)}
+.note{margin:0;color:var(--muted);font-size:14px}
+.code{background:var(--code);background-image:radial-gradient(var(--dot) 1px,transparent 1.2px);background-size:18px 18px;border-radius:10px;padding:14px;overflow-x:auto;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-start}
+pre.blocks{margin:0;font-size:12px;white-space:pre}
+.bug{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.bug>div{border-radius:10px;padding:10px;display:grid;gap:8px;min-width:0}
+.bug .no{background:var(--bad-soft)} .bug .yes{background:var(--ok-soft)}
+.bug h3{margin:0;font-family:var(--display);font-size:16px}
+.no h3{color:var(--bad)} .yes h3{color:var(--ok)}
+.bug .code{background-color:var(--code)}
+ul.check{margin:0;padding-left:20px;display:grid;gap:4px}
+.test{border:2px dashed var(--ok);background:var(--ok-soft)}
+.prep{border:2px solid var(--accent)}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+figure{margin:0;background:var(--code);border-radius:10px;padding:12px;display:grid;gap:8px;align-content:start;min-width:0}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-size:14px}
+figcaption b.n{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;margin-right:6px}
+.tip{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:14px;margin:0}
+.s-panel{fill:var(--panel);stroke:var(--dot);stroke-width:1.5}
+.s-field{fill:var(--panel);stroke:var(--dot);stroke-width:1.5}
+.s-hl{fill:none;stroke:var(--accent);stroke-width:3}
+.s-hlfill{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.s-tx{fill:var(--fg);font:700 12px var(--body)}
+.s-mu{fill:var(--muted);font:11px var(--body)}
+.s-ac{fill:var(--accent);font:800 12px var(--body)}
+.s-ln{stroke:var(--muted);stroke-width:1.5;fill:none}
+.s-axis{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 4}
+.s-ico{fill:var(--muted)}
+.stage .s-tx{font-size:15px}.stage .s-mu{font-size:13px}
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.legend span{font-size:12.5px;font-weight:700;color:#fff;padding:2px 10px;border-radius:999px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tabs button{font:inherit;cursor:pointer;background:var(--panel);color:var(--fg);border:2px solid var(--dot);border-radius:14px;padding:10px 8px;display:grid;gap:2px;justify-items:center;text-align:center}
+.tabs button .e{font-size:28px;line-height:1}
+.tabs button .t{font-family:var(--display);font-weight:800;font-size:15px;line-height:1.15}
+.tabs button .k{font-size:12px;color:var(--muted)}
+.tabs button[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.mission{display:grid;gap:22px}
+.mission[hidden]{display:none}
+.mhead{display:grid;gap:8px}
+.mhead h1{font-size:clamp(26px,5vw,38px)}
+.goal{font-size:16px;margin:0;max-width:62ch}
+.how{margin:0;font-size:14px;background:var(--code);border-radius:8px;padding:8px 10px}
+.how b{color:var(--accent)}
+.done{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.done label{display:flex;gap:8px;align-items:center;background:var(--code);border-radius:8px;padding:8px 10px;cursor:pointer;font-weight:700}
+.done input{width:20px;height:20px;accent-color:var(--ok)}
+.ideas{margin:0;padding-left:20px;display:grid;gap:4px}
+@media (max-width:520px){.tabs button .t{font-size:13px}.tabs button .k{display:none}}
+</style>
+<style>
+.game{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:18px;align-items:center}
+.game svg{width:100%;height:auto;display:block;border-radius:12px}
+@media (max-width:640px){.game{grid-template-columns:1fr}}
+.steps-nav{display:flex;flex-wrap:wrap;gap:8px}
+.steps-nav a{background:var(--panel);border:2px solid var(--dot);border-radius:999px;padding:5px 12px;font-weight:700;font-size:13.5px;color:var(--fg);text-decoration:none}
+.steps-nav a:hover,.steps-nav a:focus-visible{border-color:var(--accent);outline:none}
+.stepnum{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--display);font-weight:800;font-size:18px;flex:none}
+.todo{margin:0;padding-left:22px;display:grid;gap:6px;font-size:15px}
+.todo li::marker{font-weight:800;color:var(--accent)}
+.testbox{margin:0;background:var(--ok-soft);border-radius:8px;padding:8px 10px;font-size:14px}
+.testbox b{color:var(--ok)}
+.for{margin:0 0 -6px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;padding:8px 12px;border-radius:10px 10px 0 0;color:#1d1830}
+.for .dot{width:16px;height:16px;border-radius:50%;flex:none;border:2px solid rgba(0,0,0,.25)}
+.for{display:block}.for .dot{display:inline-block;vertical-align:-3px;margin-right:8px}
+.for.sp-ball{background:#ffe08a}.for.sp-ball .dot{background:#ffc928}
+.for.sp-paddle{background:#b4eeae}.for.sp-paddle .dot{background:#4fc846}
+.for.sp-line{background:#ffb9b3}.for.sp-line .dot{background:#e0483e}
+.code.sp-ball,.code.sp-paddle,.code.sp-line{border:3px solid;border-top:0;border-radius:0 0 10px 10px}
+.code.sp-ball{border-color:#ffe08a}.code.sp-paddle{border-color:#b4eeae}.code.sp-line{border-color:#ffb9b3}
+.for.sp-cal{background:#e9c9a3}.for.sp-cal .dot{background:#a0642c}
+.for.sp-apple{background:#ffc2bd}.for.sp-apple .dot{background:#e0483e}
+.for.sp-banana{background:#ffe48a}.for.sp-banana .dot{background:#f5c400}
+.for.sp-rock{background:#d9d4e3}.for.sp-rock .dot{background:#7a7290}
+.code.sp-rock{border:3px solid #d9d4e3;border-top:0;border-radius:0 0 10px 10px}
+.code.sp-cal,.code.sp-apple,.code.sp-banana{border:3px solid;border-top:0;border-radius:0 0 10px 10px}
+.code.sp-cal{border-color:#e9c9a3}.code.sp-apple{border-color:#ffc2bd}.code.sp-banana{border-color:#ffe48a}
+.where{font-size:13px;font-weight:700;color:#fff;padding:1px 9px;border-radius:999px;white-space:nowrap}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>🍎 Attrape tout : <span>la calebasse gourmande</span></h1>
+    <p class="intro">Niveau 2, mission 1. Des pommes, des bananes et des cailloux tombent du ciel. Déplace la calebasse avec la souris pour attraper le plus de fruits possible en 1 minute, sans prendre les cailloux !</p>
+    <div class="legend">
+      <span style="background:#4c97ff">Mouvement</span>
+      <span style="background:#9966ff">Apparence</span>
+      <span style="background:#d9a400">Événements</span>
+      <span style="background:#ffab19">Contrôle</span>
+      <span style="background:#4cb0d8">Capteurs</span>
+      <span style="background:#40bf4a">Opérateurs</span>
+      <span style="background:#ff8c1a">Variables</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="game">
+      <svg viewBox="0 0 480 360" role="img" aria-label="Aperçu du jeu : des fruits et un caillou tombent, une calebasse en bas les attrape">
+        <rect width="480" height="360" fill="#8fd3ff"/>
+        <rect y="300" width="480" height="60" fill="#7cc46b"/>
+        <rect x="14" y="14" width="96" height="28" rx="8" fill="#ff8c1a"/><text x="62" y="33" fill="#fff" font-weight="800" font-size="15" text-anchor="middle">Score 7</text>
+        <rect x="118" y="14" width="110" height="28" rx="8" fill="#ff8c1a"/><text x="173" y="33" fill="#fff" font-weight="800" font-size="15" text-anchor="middle">Temps 42</text>
+        <text x="120" y="110" font-size="40" text-anchor="middle">🍎</text>
+        <text x="330" y="80" font-size="40" text-anchor="middle">🍌</text>
+        <text x="420" y="190" font-size="34" text-anchor="middle">🪨</text>
+        <text x="420" y="222" fill="#fff" font-weight="800" font-size="14" text-anchor="middle">-3 points</text>
+        <path d="M120 120 V200 M330 90 V170" stroke="#fff" stroke-width="3" stroke-dasharray="6 6"/>
+        <text x="138" y="180" font-size="22" fill="#fff" font-weight="800">↓</text>
+        <text x="348" y="150" font-size="22" fill="#fff" font-weight="800">↓</text>
+        <path d="M172 282 Q172 330 230 330 Q288 330 288 282z" fill="#c47f2c" stroke="#222" stroke-width="2.5"/>
+        <ellipse cx="230" cy="282" rx="58" ry="13" fill="#5c0f0a" stroke="#222" stroke-width="2.5"/>
+        <text x="230" y="350" fill="#fff" font-weight="800" font-size="15" text-anchor="middle">← la calebasse suit la souris →</text>
+      </svg>
+      <div style="display:grid;gap:10px">
+        <h2>Le but du jeu</h2>
+        <p class="goal">Chaque fruit attrapé donne <b>1 point</b>. Attention aux <b>cailloux</b> : ils font perdre <b>3 points</b> ! Ce qui n'est pas attrapé remonte en haut et retombe. Au bout de <b>60 secondes</b>, le jeu s'arrête : compte tes points !</p>
+        <div class="setup">
+          <span class="chip">7 sprites : <b>Bowl</b> (la calebasse), 2 × <b>Apple</b>, 2 × <b>Bananas</b>, 2 × <b>Rocks</b></span>
+          <span class="chip">2 variables : <b>Score</b>, <b>Temps</b></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="steps-nav" aria-label="Étapes">
+    <a href="#preparer">Préparer</a>
+    <a href="#etape-1">1 · La calebasse</a>
+    <a href="#etape-2">2 · La pomme</a>
+    <a href="#etape-3">3 · La banane</a>
+    <a href="#etape-4">4 · Le caillou</a>
+    <a href="#etape-5">5 · Dupliquer</a>
+    <a href="#etape-6">6 · Le chrono</a>
+    <a href="#bonus">Bonus</a>
+    <a href="#recap">Tout le code</a>
+  </nav>
+
+  <!-- ===== PRÉPARER ===== -->
+  <section class="prep" id="preparer">
+    <div class="head"><span class="tag">Avant de coder</span><h2>Préparer le projet</h2></div>
+    <div class="figs">
+      <figure>
+        <svg viewBox="0 0 340 200" role="img" aria-label="Choisir les sprites Apple, Bananas, Rocks et Bowl">
+          <rect class="s-panel" x="6" y="6" width="328" height="188" rx="10"/>
+          <rect class="s-field" x="18" y="18" width="304" height="26" rx="13"/>
+          <text x="32" y="36" font-size="12">🔍</text><text class="s-tx" x="50" y="36">apple, bananas, rocks, bowl</text>
+          <rect class="s-hlfill" x="18" y="56" width="70" height="84" rx="8"/><text x="53" y="102" font-size="28" text-anchor="middle">🍎</text><text class="s-ac" x="53" y="130" text-anchor="middle">Apple</text>
+          <rect class="s-hlfill" x="96" y="56" width="70" height="84" rx="8"/><text x="131" y="102" font-size="28" text-anchor="middle">🍌</text><text class="s-ac" x="131" y="130" text-anchor="middle">Bananas</text>
+          <rect class="s-hlfill" x="174" y="56" width="70" height="84" rx="8"/><text x="209" y="102" font-size="28" text-anchor="middle">🪨</text><text class="s-ac" x="209" y="130" text-anchor="middle">Rocks</text>
+          <rect class="s-hlfill" x="252" y="56" width="70" height="84" rx="8"/>
+          <path d="M267 84 Q267 108 287 108 Q307 108 307 84z" fill="#c47f2c" stroke="#222" stroke-width="1.5"/>
+          <ellipse cx="287" cy="84" rx="20" ry="5" fill="#5c0f0a" stroke="#222" stroke-width="1.5"/>
+          <text class="s-ac" x="287" y="130" text-anchor="middle">Bowl</text>
+          <text class="s-mu" x="53" y="160" text-anchor="middle">pomme</text>
+          <text class="s-mu" x="131" y="160" text-anchor="middle">banane</text>
+          <text class="s-mu" x="209" y="160" text-anchor="middle">caillou</text>
+          <text class="s-mu" x="287" y="160" text-anchor="middle">calebasse</text>
+          <text class="s-mu" x="170" y="186" text-anchor="middle">garde les noms anglais : le code les utilise</text>
+        </svg>
+        <figcaption><b class="n">1</b>Supprime le chat (la croix sur son sprite). Puis <b>Choisir un sprite</b> 4 fois ➜ ajoute <b>Apple</b>, <b>Bananas</b>, <b>Rocks</b> et <b>Bowl</b> (la calebasse). <b>Ne change pas leurs noms.</b> Choisis aussi un décor, par exemple <b>Blue Sky</b>.</figcaption>
+      </figure>
+
+      <figure>
+        <svg viewBox="0 0 320 230" role="img" aria-label="Créer les variables Score et Temps">
+          <rect class="s-panel" x="6" y="6" width="308" height="218" rx="10"/>
+          <circle cx="30" cy="34" r="12" fill="#ff8c1a"/><text class="s-tx" x="48" y="38">Variables</text>
+          <rect class="s-hlfill" x="20" y="54" width="140" height="28" rx="6"/><text class="s-ac" x="90" y="73" text-anchor="middle">Créer une variable</text>
+          <text class="s-ac" x="172" y="73">× 2</text>
+          <rect class="s-field" x="20" y="96" width="282" height="74" rx="8"/>
+          <text class="s-mu" x="32" y="116">Nom de la nouvelle variable :</text>
+          <rect class="s-field" x="32" y="124" width="120" height="24" rx="4"/><rect class="s-hl" x="30" y="122" width="124" height="28" rx="5"/>
+          <text class="s-tx" x="42" y="141">Score</text>
+          <text class="s-mu" x="168" y="141">puis une 2e :</text>
+          <rect class="s-field" x="246" y="124" width="48" height="24" rx="4"/><text class="s-tx" x="252" y="141">Temps</text>
+          <rect x="20" y="184" width="100" height="28" rx="8" fill="#ff8c1a"/><text x="70" y="203" fill="#fff" font-weight="800" font-size="13" text-anchor="middle">Score 0</text>
+          <rect x="130" y="184" width="110" height="28" rx="8" fill="#ff8c1a"/><text x="185" y="203" fill="#fff" font-weight="800" font-size="13" text-anchor="middle">Temps 60</text>
+          <text class="s-mu" x="250" y="203">sur la scène</text>
+        </svg>
+        <figcaption><b class="n">2</b>Catégorie orange <span class="where" style="background:#ff8c1a">Variables</span> ➜ <b>Créer une variable</b> ➜ <b>Score</b> ➜ OK. Recommence pour créer <b>Temps</b>. Les deux s'affichent en haut de la scène.</figcaption>
+      </figure>
+
+      <figure>
+        <svg viewBox="0 0 320 200" role="img" aria-label="Cliquer sur le sprite avant de poser ses blocs">
+          <rect class="s-panel" x="6" y="6" width="308" height="188" rx="10"/>
+          <text class="s-mu" x="18" y="26">Zone des sprites (en bas à droite)</text>
+          <rect x="18" y="40" width="84" height="88" rx="8" fill="#fff4e6" stroke="#4c97ff" stroke-width="4"/>
+          <path d="M36 74 Q36 98 60 98 Q84 98 84 74z" fill="#c47f2c" stroke="#222" stroke-width="1.5"/><ellipse cx="60" cy="74" rx="24" ry="6" fill="#5c0f0a" stroke="#222" stroke-width="1.5"/>
+          <text x="60" y="118" font-weight="800" font-size="11" text-anchor="middle" fill="#2b2440">Bowl</text>
+          <rect class="s-field" x="118" y="40" width="84" height="88" rx="8"/><text x="160" y="92" font-size="28" text-anchor="middle">🍎</text><text class="s-tx" x="160" y="118" text-anchor="middle">Apple</text>
+          <rect class="s-field" x="218" y="40" width="84" height="88" rx="8"/><text x="260" y="92" font-size="28" text-anchor="middle">🍌</text><text class="s-tx" x="260" y="118" text-anchor="middle">Bananas</text>
+          <text class="s-ac" x="60" y="148" text-anchor="middle">↑ contour bleu</text>
+          <text class="s-tx" x="160" y="174" text-anchor="middle">Contour bleu = sprite choisi.</text>
+          <text class="s-mu" x="160" y="188" text-anchor="middle">Les blocs que tu poses sont pour lui.</text>
+        </svg>
+        <figcaption><b class="n">3</b><b>La règle d'or :</b> avant de poser des blocs, <b>clique sur le bon sprite</b>. Chaque code de cette fiche a une étiquette qui dit pour quel sprite il est.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===== ÉTAPE 1 ===== -->
+  <section id="etape-1">
+    <div class="head"><span class="stepnum">1</span><h2>La calebasse suit la souris</h2></div>
+    <ol class="todo">
+      <li>Clique sur le sprite <b>Bowl</b> (la calebasse).</li>
+      <li>Pose les blocs dans l'ordre, de haut en bas. Le bloc orange <b>mettre Score à 0</b> est dans <span class="where" style="background:#ff8c1a">Variables</span>. <b>souris x</b> est dans <span class="where" style="background:#4cb0d8">Capteurs</span>.</li>
+    </ol>
+    <p class="for sp-cal"><span class="dot"></span>Ce code va dans le sprite <b>Bowl</b> (la calebasse)</p>
+    <div class="code sp-cal"><pre class="blocks">quand @greenFlag est cliqué
+mettre [Score v] à (0)
+aller à x: (0) y: (-140)
+répéter indéfiniment
+mettre x à (souris x)
+fin</pre></div>
+    <p class="how">💡 Au début, le score revient à 0 et la calebasse se place en bas. Ensuite, elle suit la souris de gauche à droite, sans arrêt.</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁, bouge la souris. La calebasse te suit en bas de la scène.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 2 ===== -->
+  <section id="etape-2">
+    <div class="head"><span class="stepnum">2</span><h2>La pomme tombe et donne des points</h2></div>
+    <ol class="todo">
+      <li>Clique sur le sprite <b>Apple</b>.</li>
+      <li>Le bloc vert <b>nombre aléatoire</b> (<span class="where" style="background:#40bf4a">Opérateurs</span>) se glisse dans la case <b>x</b> du bloc bleu <b>aller à</b>. Il y en a 3 : un au début, un dans chaque <b>si</b>. Dans le <b>premier aller à</b>, mets-en aussi un dans la case <b>y</b> (entre 0 et 170).</li>
+      <li>Dans le menu de <b>touche le … ?</b> (<span class="where" style="background:#4cb0d8">Capteurs</span>), choisis <b>Bowl</b>.</li>
+      <li><b>ordonnée y</b> est le dernier bloc rond de <span class="where" style="background:#4c97ff">Mouvement</span>. Le signe <b>&lt;</b> est dans <span class="where" style="background:#40bf4a">Opérateurs</span>.</li>
+    </ol>
+    <p class="for sp-apple"><span class="dot"></span>Ce code va dans le sprite <b>Apple</b> (la pomme)</p>
+    <div class="code sp-apple"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (nombre aléatoire entre (0) et (170))
+répéter indéfiniment
+ajouter (-5) à y
+si &lt;touche le [Bowl v] ?&gt; alors
+ajouter (1) à [Score v]
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+si &lt;(ordonnée y) &lt; (-160)&gt; alors
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+fin</pre></div>
+    <p class="how">💡 Au début, la pomme se place à un endroit choisi au hasard dans le haut de la scène : ainsi, les objets ne tombent pas tous en même temps. Elle descend de 5 pas à chaque tour (<b>-5</b> = vers le bas).<br>
+    <b>1er si</b> : la calebasse l'attrape ➜ +1 point, et la pomme <b>remonte tout de suite</b> en haut. Comme elle ne touche plus la calebasse, le point ne compte qu'<b>une seule fois</b>.<br>
+    <b>2e si</b> : la pomme est ratée et arrive tout en bas ➜ elle remonte en haut, sans point.</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁. Attrape la pomme : le score monte de 1. Rate-la : elle retombe d'en haut.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 3 ===== -->
+  <section id="etape-3">
+    <div class="head"><span class="stepnum">3</span><h2>La banane : on copie le code de la pomme</h2></div>
+    <div style="display:grid;gap:14px">
+      <figure style="max-width:440px">
+        <svg viewBox="0 0 320 200" role="img" aria-label="Glisser le script de la pomme sur le sprite Bananas pour le copier">
+          <rect class="s-panel" x="6" y="6" width="308" height="188" rx="10"/>
+          <rect x="20" y="20" width="110" height="20" rx="4" fill="#ffbf00"/><text x="28" y="34" fill="#fff" font-size="10" font-weight="700">quand 🏁 est cliqué</text>
+          <rect x="20" y="40" width="120" height="16" rx="3" fill="#4c97ff"/>
+          <rect x="20" y="56" width="16" height="44" fill="#ffab19"/><rect x="20" y="56" width="110" height="14" rx="3" fill="#ffab19"/>
+          <rect x="36" y="70" width="90" height="14" rx="3" fill="#4c97ff"/>
+          <rect x="20" y="96" width="80" height="10" rx="3" fill="#ffab19"/>
+          <path d="M120 90 C170 110 190 140 205 150" stroke="#855cd6" stroke-width="3" fill="none" stroke-dasharray="6 5" marker-end="url(#arr3)"/>
+          <defs><marker id="arr3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#855cd6"/></marker></defs>
+          <text class="s-ac" x="128" y="140" text-anchor="end">glisse le script…</text>
+          <rect class="s-field" x="150" y="128" width="64" height="58" rx="8"/><text x="182" y="162" font-size="22" text-anchor="middle">🍎</text><text class="s-mu" x="182" y="180" text-anchor="middle">Apple</text>
+          <rect x="226" y="128" width="64" height="58" rx="8" fill="#fff4c2" stroke="#855cd6" stroke-width="3"/><text x="258" y="162" font-size="22" text-anchor="middle">🍌</text><text class="s-tx" x="258" y="180" text-anchor="middle">Bananas</text>
+          <text class="s-ac" x="258" y="118" text-anchor="middle">…et lâche-le ici</text>
+        </svg>
+        <figcaption><b class="n">!</b>Toujours dans le sprite <b>Apple</b>, attrape le script par son chapeau jaune et <b>lâche-le sur le sprite Bananas</b> dans la zone des sprites. Le sprite Bananas bouge un peu : le code est copié !</figcaption>
+      </figure>
+      <div style="display:grid;gap:8px;align-content:start;min-width:0">
+        <p class="for sp-banana"><span class="dot"></span>Ce code va dans le sprite <b>Bananas</b> (la banane)</p>
+        <div class="code sp-banana"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (nombre aléatoire entre (0) et (170))
+répéter indéfiniment
+ajouter (-5) à y
+si &lt;touche le [Bowl v] ?&gt; alors
+ajouter (1) à [Score v]
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+si &lt;(ordonnée y) &lt; (-160)&gt; alors
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+fin</pre></div>
+      </div>
+    </div>
+    <p class="how">💡 C'est <b>exactement le même code</b> que la pomme. Clique sur le sprite <b>Bananas</b> pour vérifier que le script y est bien.</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁. Une pomme et une banane tombent. Chacune donne 1 point.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 4 ===== -->
+  <section id="etape-4">
+    <div class="head"><span class="stepnum">4</span><h2>Le caillou fait perdre 3 points</h2></div>
+    <ol class="todo">
+      <li>Clique sur le sprite <b>Apple</b>. Glisse son script sur le sprite <b>Rocks</b>, comme à l'étape 3.</li>
+      <li>Clique sur le sprite <b>Rocks</b>. Dans le premier <b>si</b>, change <b>1</b> en <b>-3</b>. C'est le seul changement !</li>
+    </ol>
+    <p class="for sp-rock"><span class="dot"></span>Ce code va dans le sprite <b>Rocks</b> (le caillou)</p>
+    <div class="code sp-rock"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (nombre aléatoire entre (0) et (170))
+répéter indéfiniment
+ajouter (-5) à y
+si &lt;touche le [Bowl v] ?&gt; alors
+ajouter (-3) à [Score v]
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+si &lt;(ordonnée y) &lt; (-160)&gt; alors
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+fin</pre></div>
+    <p class="how">💡 <b>ajouter -3 à Score</b> enlève 3 points. Le caillou tombe comme les fruits, mais il ne faut <b>pas</b> l'attraper !</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁. Attrape le caillou exprès : le score baisse de 3.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 5 ===== -->
+  <section id="etape-5">
+    <div class="head"><span class="stepnum">5</span><h2>Deux de chaque : on duplique</h2></div>
+    <div class="figs">
+      <figure>
+        <svg viewBox="0 0 320 170" role="img" aria-label="Clic droit sur le sprite Apple puis dupliquer">
+          <rect class="s-panel" x="6" y="6" width="308" height="158" rx="10"/>
+          <rect class="s-hl" x="20" y="20" width="70" height="74" rx="8"/>
+          <text x="55" y="64" font-size="28" text-anchor="middle">🍎</text><text class="s-tx" x="55" y="86" text-anchor="middle">Apple</text>
+          <text class="s-mu" x="100" y="30">clic droit</text>
+          <rect class="s-field" x="100" y="38" width="110" height="80" rx="6"/>
+          <rect class="s-hlfill" x="104" y="42" width="102" height="24" rx="4"/>
+          <text class="s-ac" x="114" y="59">dupliquer</text>
+          <text class="s-tx" x="114" y="86">exporter</text>
+          <text class="s-tx" x="114" y="110">supprimer</text>
+          <path class="s-ln" d="M210 54 L236 54" marker-end="url(#arrDup)"/>
+          <defs><marker id="arrDup" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#855cd6"/></marker></defs>
+          <rect class="s-field" x="236" y="20" width="70" height="74" rx="8"/>
+          <text x="271" y="64" font-size="28" text-anchor="middle">🍎</text><text class="s-ac" x="271" y="86" text-anchor="middle">Apple2</text>
+          <text class="s-mu" x="160" y="146" text-anchor="middle">Apple2 a déjà tout le code de la pomme !</text>
+        </svg>
+        <figcaption><b class="n">!</b>Clic droit sur le sprite <b>Apple</b> ➜ <b>dupliquer</b>. <b>Apple2</b> apparaît avec le même code. Fais pareil avec <b>Bananas</b> et <b>Rocks</b>.</figcaption>
+      </figure>
+      <figure>
+        <svg viewBox="0 0 380 170" role="img" aria-label="Les 7 sprites après duplication">
+          <rect class="s-panel" x="6" y="6" width="368" height="158" rx="10"/>
+          <text class="s-mu" x="18" y="26">Zone des sprites, à la fin :</text>
+          <g font-size="24" text-anchor="middle"><text x="32" y="66">🥣</text><text x="84" y="66">🍎</text><text x="136" y="66">🍎</text><text x="188" y="66">🍌</text><text x="240" y="66">🍌</text><text x="292" y="66">🪨</text><text x="344" y="66">🪨</text></g>
+          <g class="s-tx" text-anchor="middle" style="font-size:10px"><text x="32" y="88">Bowl</text><text x="84" y="88">Apple</text><text x="136" y="88">Apple2</text><text x="188" y="88">Bananas</text><text x="240" y="88">Bananas2</text><text x="292" y="88">Rocks</text><text x="344" y="88">Rocks2</text></g>
+          <text class="s-ac" x="190" y="124" text-anchor="middle">7 sprites : 1 calebasse + 6 objets qui tombent</text>
+          <text class="s-mu" x="190" y="146" text-anchor="middle">les copies se nomment toutes seules avec un 2</text>
+        </svg>
+        <figcaption><b class="n">!</b>À la fin, tu as <b>7 sprites</b>. Ne change aucun nom : les copies s'appellent <b>Apple2</b>, <b>Bananas2</b> et <b>Rocks2</b>.</figcaption>
+      </figure>
+    </div>
+    <p class="how">💡 Pas besoin de recopier les blocs : <b>dupliquer</b> copie le sprite <b>et</b> son code. Comme chaque objet part d'une hauteur différente, ils ne tombent pas tous ensemble.</p>
+    <p class="testbox"><b>Teste :</b> drapeau vert 🏁. 2 pommes, 2 bananes et 2 cailloux tombent, chacun à son rythme.</p>
+  </section>
+
+  <!-- ===== ÉTAPE 6 ===== -->
+  <section id="etape-6">
+    <div class="head"><span class="stepnum">6</span><h2>Le chrono : 60 secondes</h2></div>
+    <ol class="todo">
+      <li>Clique sur le sprite <b>Bowl</b> (la calebasse).</li>
+      <li>Pose ce <b>deuxième script</b> à côté de celui de l'étape 1. Ne supprime pas le premier !</li>
+      <li><b>répéter jusqu'à ce que</b> est dans <span class="where" style="background:#ffab19">Contrôle</span>, le bloc <b>=</b> dans <span class="where" style="background:#40bf4a">Opérateurs</span>, le bloc rond <b>Temps</b> dans <span class="where" style="background:#ff8c1a">Variables</span>.</li>
+    </ol>
+    <p class="for sp-cal"><span class="dot"></span>Ce code va dans le sprite <b>Bowl</b> (la calebasse)</p>
+    <div class="code sp-cal"><pre class="blocks">quand @greenFlag est cliqué
+mettre [Temps v] à (60)
+répéter jusqu'à ce que &lt;(Temps) = (0)&gt;
+attendre (1) secondes
+ajouter (-1) à [Temps v]
+fin
+dire [Fin du jeu !] pendant (2) secondes
+stop [tout v]</pre></div>
+    <p class="how">💡 Le temps commence à 60. Chaque seconde, il baisse de 1 : 60, 59, 58… Quand il arrive à 0, la calebasse dit « Fin du jeu ! » et <b>tout s'arrête</b>. Ton score reste affiché en haut de la scène.</p>
+    <p class="testbox"><b>Teste :</b> joue une partie entière. Le temps descend jusqu'à 0, puis tout s'arrête. Combien de points as-tu ?</p>
+  </section>
+
+  <section class="test">
+    <div class="head"><span class="tag">Teste tout !</span><h2>Ton jeu est-il complet ?</h2></div>
+    <div class="done">
+      <label><input type="checkbox" id="t-1"> La calebasse suit la souris</label>
+      <label><input type="checkbox" id="t-2"> 2 pommes, 2 bananes et 2 cailloux tombent</label>
+      <label><input type="checkbox" id="t-3"> Le score monte de 1 par fruit</label>
+      <label><input type="checkbox" id="t-6"> Un caillou fait perdre 3 points</label>
+      <label><input type="checkbox" id="t-4"> Un fruit raté retombe d'en haut</label>
+      <label><input type="checkbox" id="t-5"> Le temps descend de 60 à 0, puis tout s'arrête</label>
+    </div>
+  </section>
+
+  <!-- ===== BONUS ===== -->
+  <section id="bonus">
+    <div class="head"><span class="tag">S'il reste du temps</span><h2>Améliore ton jeu</h2></div>
+
+    <div class="head"><h2 style="font-size:18px">⭐ Des vitesses différentes</h2></div>
+    <p class="note">Dans le code de <b>Bananas</b>, change <b>ajouter -5 à y</b> en <b>ajouter -8 à y</b> : la banane tombe plus vite que la pomme. Essaie <b>-3</b> pour un fruit très lent.</p>
+    <p class="for sp-banana"><span class="dot"></span>Seul ce bloc change, dans le sprite <b>Bananas</b></p>
+    <div class="code sp-banana"><pre class="blocks">ajouter (-8) à y</pre></div>
+  </section>
+
+  <!-- ===== RÉCAP ===== -->
+  <section id="recap">
+    <div class="head"><span class="tag">Tout le code</span><h2>Le jeu complet, sprite par sprite</h2></div>
+    <p class="for sp-cal"><span class="dot"></span>Sprite <b>Bowl</b> (la calebasse) : 2 scripts</p>
+    <div class="code sp-cal">
+<pre class="blocks">quand @greenFlag est cliqué
+mettre [Score v] à (0)
+aller à x: (0) y: (-140)
+répéter indéfiniment
+mettre x à (souris x)
+fin</pre>
+<pre class="blocks">quand @greenFlag est cliqué
+mettre [Temps v] à (60)
+répéter jusqu'à ce que &lt;(Temps) = (0)&gt;
+attendre (1) secondes
+ajouter (-1) à [Temps v]
+fin
+dire [Fin du jeu !] pendant (2) secondes
+stop [tout v]</pre>
+    </div>
+    <p class="for sp-apple"><span class="dot"></span>Sprites <b>Apple</b> et <b>Apple2</b> : 1 script</p>
+    <div class="code sp-apple"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (nombre aléatoire entre (0) et (170))
+répéter indéfiniment
+ajouter (-5) à y
+si &lt;touche le [Bowl v] ?&gt; alors
+ajouter (1) à [Score v]
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+si &lt;(ordonnée y) &lt; (-160)&gt; alors
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+fin</pre></div>
+    <p class="for sp-banana"><span class="dot"></span>Sprites <b>Bananas</b> et <b>Bananas2</b> : 1 script (le même que Apple)</p>
+    <div class="code sp-banana"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (nombre aléatoire entre (0) et (170))
+répéter indéfiniment
+ajouter (-5) à y
+si &lt;touche le [Bowl v] ?&gt; alors
+ajouter (1) à [Score v]
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+si &lt;(ordonnée y) &lt; (-160)&gt; alors
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+fin</pre></div>
+    <p class="for sp-rock"><span class="dot"></span>Sprites <b>Rocks</b> et <b>Rocks2</b> : 1 script (comme Apple, mais <b>-3</b>)</p>
+    <div class="code sp-rock"><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (nombre aléatoire entre (0) et (170))
+répéter indéfiniment
+ajouter (-5) à y
+si &lt;touche le [Bowl v] ?&gt; alors
+ajouter (-3) à [Score v]
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+si &lt;(ordonnée y) &lt; (-160)&gt; alors
+aller à x: (nombre aléatoire entre (-200) et (200)) y: (170)
+fin
+fin</pre></div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.6.4/build/scratchblocks.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/scratchblocks@3.6.4/build/translations-all.js"></script>
+<script>
+try{ scratchblocks.renderMatching('pre.blocks',{style:'scratch3',languages:['fr'],scale:0.8}); }catch(e){ console.error(e); }
+</script>
+
+</body></html>
